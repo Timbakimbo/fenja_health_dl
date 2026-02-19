@@ -1,4 +1,5 @@
 import json
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -11,11 +12,14 @@ class RiskModel:
 
     def predict_risk(self, age: int, activity: int, weight: float) -> float:
         return (age + (10 - activity)) / 20 + self.bias
+    
+    def to_dict(self) -> dict:
+        return {"bias": self.bias}
 
     def save(self) -> None:
         MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(MODEL_PATH, "w") as f:
-            json.dump({"bias": self.bias}, f)
+            json.dump(self.to_dict(), f)
 
     @classmethod
     def load(cls) -> "RiskModel":
@@ -25,7 +29,22 @@ class RiskModel:
             return cls(**data)
         return cls()
 
-
+_MODEL_LOCK = threading.Lock()
 MODEL = RiskModel.load()
 
+def get_model_snapshot()->dict:
+    with _MODEL_LOCK:
+        return MODEL.to_dict()
+    
+def reload_model() -> dict:
+    loaded = RiskModel.load()
+    with _MODEL_LOCK:
+        global MODEL
+        MODEL = loaded
+        return MODEL.to_dict()
+    
+def predict_risk(age: int, activity: int, weight: float) -> float:
+    with _MODEL_LOCK:
+        return MODEL.predict_risk(age, activity, weight)
 
+   
