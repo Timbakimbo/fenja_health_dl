@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pytest
+.pytest_cache/
+
+# Virtual Environment
+.venv/
+
+# macOS
+.DS_Store
+
+# Runtime model state
+models/risk_model.json
