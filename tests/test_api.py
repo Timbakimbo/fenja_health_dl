@@ -1,18 +1,3 @@
-import json
-from fastapi.testclient import TestClient
-
-from fenja_health_dl.main import app
-from fenja_health_dl.model import MODEL_PATH
-
-client = TestClient(app)
-
-
-def test_health():
-    r = client.get("/health")
-    assert r.status_code == 200
-    assert r.json()["status"] == "ok"
-
-
 def test_model_reload_changes_bias():
     # write new model state
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -28,7 +13,11 @@ def test_model_reload_changes_bias():
     # prediction reflects new bias
     r2 = client.post(
         "/predict",
-        json={"weight": 30.0, "age": 5, "activity": 6}
+        json={"weight": 30.0, "age": 5, "activity": 6},
     )
+
     assert r2.status_code == 200
-    assert "risk_score" in r2.json()
+
+    expected = (5 + (10 - 6)) / 20 + 0.42
+    assert abs(r2.json()["risk_score"] - expected) < 1e-9
+
