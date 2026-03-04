@@ -3,9 +3,14 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+dist/
+build/
 
-# Pytest
+# Pytest / coverage
 .pytest_cache/
+.coverage
+htmlcov/
 
 # Virtual Environment
 .venv/
@@ -15,3 +20,6 @@ __pycache__/
 
 # Runtime model state
 models/risk_model.json
+
+# Secrets
+.env
