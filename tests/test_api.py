@@ -1,3 +1,13 @@
+import json
+
+from fastapi.testclient import TestClient
+
+from fenja_health_dl.main import app
+from fenja_health_dl.model import MODEL_PATH
+
+client = TestClient(app)
+
+
 def test_model_reload_changes_bias():
     # write new model state
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
