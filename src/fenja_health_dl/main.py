@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 
@@ -7,6 +8,13 @@ from fenja_health_dl.model import predict_risk, reload_model, get_model_snapshot
 from fenja_health_dl.routers import daily_logs, health_markers, insights, treatments, vet_visits, vital_readings
 
 app = FastAPI(title="Fenja Health DL", version="0.2.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Exception handlers
 app.add_exception_handler(IntegrityError, handle_integrity_error)
