@@ -1,11 +1,19 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #2563eb;
-  --color-primary-dark: #1d4ed8;
-  --color-danger: #dc2626;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
+  --color-cream: #FDF6EC;
+  --color-sand: #F5EDE0;
+  --color-warm-brown: #3D2B1F;
+  --color-bark: #5C3D2E;
+  --color-clay: #A0785A;
+  --color-primary: #7B6247;
+  --color-primary-dark: #5C3D2E;
+  --color-danger: #C53030;
+  --color-success: #2F855A;
+  --color-warning: #D69E2E;
+  --color-stool-bad: #C53030;
+  --color-stool-good: #2F855A;
+  --color-stool-firm: #D69E2E;
 }
 
 html {
@@ -15,14 +23,65 @@ html {
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background-color: #FDF6EC;
+  color: #3D2B1F;
   min-height: 100dvh;
+}
+
+h1, h2, h3 {
+  font-family: 'DM Serif Display', serif;
 }
 
 #root {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+/* Tab transition animation */
+.tab-enter {
+  animation: fadeSlideIn 200ms ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toast animations */
+.save-toast {
+  animation: toastIn 300ms ease-out;
+}
+
+.save-toast-exit {
+  animation: toastOut 300ms ease-in forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
 }

@@ -2,13 +2,10 @@ import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ChevronDown } from 'lucide-react';
-import StoolSection from './StoolSection';
-import AppetiteSection from './AppetiteSection';
-import EnergySection from './EnergySection';
-import PainSection from './PainSection';
-import CoatSection from './CoatSection';
-import QuickNotes from './QuickNotes';
+import DailyLogTabs, { type TabKey } from './DailyLogTabs';
+import HeuteTab from './HeuteTab';
+import WoechentlichTab from './WoechentlichTab';
+import BehandlungTab from './BehandlungTab';
 import type { DailyLogCreate, DailyLogRead } from '../../api/types';
 
 const schema = z.object({
@@ -40,19 +37,8 @@ interface Props {
   isPending: boolean;
 }
 
-const sections = [
-  { key: 'stool', title: 'Stuhlgang', component: StoolSection, defaultOpen: true },
-  { key: 'appetite', title: 'Appetit', component: AppetiteSection, defaultOpen: true },
-  { key: 'energy', title: 'Energie & Verhalten', component: EnergySection, defaultOpen: true },
-  { key: 'pain', title: 'Schmerz & Mobilitaet', component: PainSection, defaultOpen: false },
-  { key: 'coat', title: 'Fell & Muskulatur', component: CoatSection, defaultOpen: false },
-  { key: 'notes', title: 'Notizen', component: QuickNotes, defaultOpen: false },
-] as const;
-
 export default function DailyLogForm({ date, existing, onSubmit, isPending }: Props) {
-  const [openSections, setOpenSections] = useState<Set<string>>(
-    new Set(sections.filter((s) => s.defaultOpen).map((s) => s.key)),
-  );
+  const [activeTab, setActiveTab] = useState<TabKey>('heute');
 
   const methods = useForm<DailyLogCreate>({
     resolver: zodResolver(schema),
@@ -79,50 +65,30 @@ export default function DailyLogForm({ date, existing, onSubmit, isPending }: Pr
     },
   });
 
-  function toggle(key: string) {
-    setOpenSections((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
-    });
-  }
+  const showSaveButton = activeTab !== 'behandlung';
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-3 pb-20">
-        {sections.map(({ key, title, component: Component }) => (
-          <div key={key} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => toggle(key)}
-              className="w-full flex items-center justify-between px-4 py-3 text-left"
-            >
-              <span className="font-medium text-gray-900">{title}</span>
-              <ChevronDown
-                className={`w-5 h-5 text-gray-400 transition-transform ${
-                  openSections.has(key) ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-            {openSections.has(key) && (
-              <div className="px-4 pb-4">
-                <Component />
-              </div>
-            )}
-          </div>
-        ))}
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="pb-24">
+        <DailyLogTabs active={activeTab} onChange={setActiveTab} />
 
-        <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-200 z-30">
-          <div className="max-w-lg mx-auto">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full py-3 bg-primary text-white rounded-xl font-semibold text-base active:bg-primary-dark disabled:opacity-50 transition-colors"
-            >
-              {isPending ? 'Speichern...' : existing ? 'Aktualisieren' : 'Speichern'}
-            </button>
+        {activeTab === 'heute' && <HeuteTab />}
+        {activeTab === 'woechentlich' && <WoechentlichTab />}
+        {activeTab === 'behandlung' && <BehandlungTab />}
+
+        {showSaveButton && (
+          <div className="fixed bottom-16 left-0 right-0 p-4 z-30">
+            <div className="max-w-lg mx-auto">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full py-3.5 bg-primary text-white rounded-2xl font-semibold text-base shadow-md active:scale-[0.98] disabled:opacity-50 transition-all duration-150"
+              >
+                {isPending ? 'Speichern...' : existing ? 'Aktualisieren' : 'Speichern'}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </form>
     </FormProvider>
   );
