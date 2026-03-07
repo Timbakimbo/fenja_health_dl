@@ -18,6 +18,9 @@ htmlcov/
 # macOS
 .DS_Store
 
+# Local AI tooling
+.claude/
+
 # Runtime model state
 models/risk_model.json
 
