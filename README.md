@@ -83,6 +83,8 @@ PYTHONPATH=src uvicorn fenja_health_dl.main:app --reload
 open http://localhost:8000/docs
 ```
 
+For frontend access outside `localhost` (phone on LAN, HTTPS tunnel), set `FRONTEND_ORIGINS` in `.env` to a comma-separated list of additional allowed frontend origins. Localhost, `127.0.0.1`, private LAN IPs, and common tunnel domains are already accepted by default.
+
 ```bash
 # Run tests (requires test database)
 docker exec fenja_postgres psql -U fenja -d fenja_health -c "CREATE DATABASE fenja_health_test"
@@ -91,4 +93,4 @@ PYTHONPATH=src pytest -v
 
 ## Project status
 
-Active development. Data layer and REST API are complete. Next up: frontend dashboard.
+Active development. Backend and frontend are both in progress; the React app now includes a mobile-first dashboard and PWA setup.
