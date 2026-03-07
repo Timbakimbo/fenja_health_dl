@@ -18,8 +18,13 @@ function filterByRange<T extends { timestamp?: string; date?: string }>(
 ): T[] {
   if (range === 'all') return data;
   const days = range === '30d' ? 30 : 90;
-  const cutoff = subDays(new Date(), days).toISOString();
-  return data.filter((p) => (p.timestamp ?? p.date ?? '') >= cutoff);
+  const cutoff = subDays(new Date(), days).getTime();
+  return data.filter((p) => {
+    const raw = p.timestamp ?? (p.date ? `${p.date}T00:00:00` : null);
+    if (!raw) return false;
+    const parsed = new Date(raw).getTime();
+    return Number.isFinite(parsed) && parsed >= cutoff;
+  });
 }
 
 export default function TrendsPage() {

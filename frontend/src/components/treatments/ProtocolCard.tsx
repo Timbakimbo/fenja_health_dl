@@ -13,6 +13,9 @@ interface Props {
 
 export default function ProtocolCard({ protocol, onAdminister }: Props) {
   const { data: compliance } = useTreatmentCompliance(protocol.id);
+  const sortedEntries = [...protocol.entries].sort(
+    (a, b) => b.scheduled_date.localeCompare(a.scheduled_date),
+  );
 
   return (
     <Card>
@@ -27,9 +30,9 @@ export default function ProtocolCard({ protocol, onAdminister }: Props) {
         {compliance && <ComplianceBadge rate={compliance.compliance_rate} />}
       </div>
 
-      {protocol.entries.length > 0 ? (
+      {sortedEntries.length > 0 ? (
         <EntryChecklist
-          entries={protocol.entries.slice(0, 7)}
+          entries={sortedEntries.slice(0, 7)}
           onAdminister={onAdminister}
         />
       ) : (
